@@ -22,11 +22,14 @@ class Tool:
         else:
             return tmp
 
+    def get_file_extension(self, page_url):
+        return page_url.split('.')[-1]
+
     def get_file_path(self, dir_path, url, index, title_page):
         index = self.convert_index(index)
         book_dir_basename = self.get_book_name(url)
         page_file_name = self.get_page_name(url)
-        return "%s\\%s\\%s_%s_%s.html"%(dir_path,book_dir_basename,index,page_file_name,title_page)
-
+        extension_file = self.get_file_extension(url)
+        return "%s\\%s\\%s_%s_%s.%s"%(dir_path,book_dir_basename,index,page_file_name,title_page,extension_file)
 
 
