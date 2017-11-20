@@ -20,7 +20,7 @@ if __name__ == "__main__":
     options = webdriver.ChromeOptions()
     options.add_argument(r"user-data-dir=D:\OtherProject\safariprofile")
     driver = webdriver.Chrome(chrome_options=options)
-
+    driver.implicitly_wait(10)
 
 
     driver.get(download_url)
