@@ -23,7 +23,8 @@ class Tool:
             return tmp
 
     def get_file_extension(self, page_url):
-        return page_url.split('.')[-1]
+        return "html"
+        #page_url.split('.')[-1]
 
     def get_file_path(self, dir_path, url, index, title_page):
         index = self.convert_index(index)

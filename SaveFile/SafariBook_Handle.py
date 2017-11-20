@@ -1,3 +1,4 @@
+# coding=utf8
 from bs4 import BeautifulSoup
 import re
 import requests
@@ -41,8 +42,11 @@ class BookPage_Xuly:
     def get_title_page(self):
         title_list =  self.parser.find_all("h1")
         if len(title_list) > 1:
-            p = re.compile('[\/*?"<>|:]')
-            return re.sub(p,"",title_list[1].text)
+            title = title_list[1].text
+            title_ascii = title.encode('ascii','ignore')
+            p = re.compile("[^\w\ ]")
+            #p = re.compile('[\/*?"<>|:]')
+            return re.sub(p,"",title_ascii)
         return ""
 
     def convert_link(self,link):
@@ -75,14 +79,15 @@ class BookPage_Xuly:
 
         for image_item in self.parser.find_all("img"):
             image_link_tmp = image_item["src"]
-            image_name = image_link_tmp.split("/")[-1]
+            if '.png' in image_link_tmp or '.jpg' in image_link_tmp or '.jpeg' in image_link_tmp:
+                image_name = image_link_tmp.split("/")[-1]
 
-            download_image_link = self.convert_link(image_link_tmp)
-            image_save_path = "%s\\%s"%(dir_src_path,image_name)
+                download_image_link = self.convert_link(image_link_tmp)
+                image_save_path = "%s\\%s"%(dir_src_path,image_name)
 
-            image_src = "./%s/%s" %(base_dir_name, image_name)
-            self.str_content = re.sub(re.escape(image_link_tmp), image_src, self.str_content )
-            self.download_file(self.season, download_image_link, image_save_path)
+                image_src = "./%s/%s" %(base_dir_name, image_name)
+                self.str_content = re.sub(re.escape(image_link_tmp), image_src, self.str_content )
+                self.download_file(self.season, download_image_link, image_save_path)
 
 
 

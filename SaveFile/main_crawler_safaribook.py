@@ -1,3 +1,4 @@
+# coding=utf-8
 import pyvirtualdisplay
 import selenium
 from selenium import  webdriver
@@ -10,16 +11,12 @@ import re
 import SafariBook_Handle
 import extra_tool
 import logging
+import selenium_processer
 
 if __name__ == "__main__":
-    logging.basicConfig(filename="log_getBook",level=logging.INFO)
+    logging.basicConfig(filename="log_getBook",level=logging.INFO, format="%(asctime)s : %(message)s")
     tool = extra_tool.Tool()
-    root_url = 'https://www.google.com'
-    download_url1 = 'https://www.safaribooksonline.com'
-    download_url='https://www.safaribooksonline.com/library/view/automate-the-boring/9781457189906/ch12.html'
-    start_page_url = 'https://www.safaribooksonline.com/library/view/automate-the-boring/9781457189906/cover.html'
-    #current_url = 'https://www.safaribooksonline.com/library/view/automate-the-boring/9781457189906/ch11.html'
-    #driver = webdriver.Chrome()
+    download_url = "https://www.safaribooksonline.com"
     options = webdriver.ChromeOptions()
     options.add_argument(r"user-data-dir=D:\OtherProject\safariprofile")
     driver = webdriver.Chrome(chrome_options=options)
@@ -30,7 +27,7 @@ if __name__ == "__main__":
 
     current_url = raw_input(" enter url: \n:")
     current_url = current_url.rstrip()
-    count_page = raw_input(" bat dau tu page 1,2,3,... : ")
+    count_page = raw_input(" bat dau tu page 0, 1 ,2,3,... : ")
     count_page = int(count_page.rstrip())
 
     cookies = driver.get_cookies()
@@ -53,18 +50,26 @@ if __name__ == "__main__":
     print "start"
     while True:
 
+        if(count_page == 0):
+            #driver.get(download_url)
+            processor = selenium_processer.Processor(driver)
+            html_content = processor.click_menu(download_url)
 
+            if not html_content:
+                logging.warn("not able get menu link %s"%download_url)
+                continue
         #s.encoding = 'utf-8'
-        response = s.get(download_url)
+        else:
+            response = s.get(download_url)
+            html_content = response.text
 
-        html_content = response.text
         safari_page_handle = SafariBook_Handle.BookPage_Xuly(html_content, s)
         title_page = safari_page_handle.get_title_page()
         file_path = tool.get_file_path(dir_to_save, download_url, count_page, title_page)
         safari_page_handle.save_file(file_path)
         print "%d da download : %s" %(count_page,download_url)
-
-        download_url = safari_page_handle.get_next_page_link()
+        if count_page > 0:
+            download_url = safari_page_handle.get_next_page_link()
         count_page += 1
         if not download_url:
             break
@@ -77,4 +82,5 @@ if __name__ == "__main__":
 
 
 
+    print "done"
     print "done"
